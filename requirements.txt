@@ -1,0 +1,9 @@
+pydantic
+pydantic-settings
+nostr-sdk
+aiohttp
+openai
+google-generativeai
+pytest
+httpx
+pytest-asyncio
