@@ -5,7 +5,10 @@ from motedico.config import Settings
 from motedico.models import Project, Proposal, ProjectStatus, ProposalStatus
 
 class ProjectAgent(BaseAgent):
-    """Manages project lifecycle and proposal tracking."""
+    """
+    Manages the lifecycle of projects and tracks incoming proposals.
+    Acts as the main coordinator for the project owner.
+    """
 
     def __init__(self, config: Settings):
         super().__init__(config)
@@ -18,7 +21,12 @@ class ProjectAgent(BaseAgent):
         pass
 
     async def create_project(self, title: str, description: str, owner: str) -> Project:
-        """Creates a new project and broadcasts it."""
+        """
+        Initializes a new project record.
+        :param title: Project title.
+        :param description: Project needs/details.
+        :param owner: Identifier of the creator.
+        """
         project_id = f"prj_{len(self.projects) + 1}"
         project = Project(id=project_id, title=title, description=description, owner=owner)
         self.projects[project_id] = project
@@ -27,7 +35,9 @@ class ProjectAgent(BaseAgent):
         return project
 
     async def add_proposal(self, project_id: str, author: str, content: str) -> Proposal:
-        """Adds a proposal (PR) to a project."""
+        """
+        Registers a new proposal (Pull Request) for an existing project.
+        """
         if project_id not in self.projects:
             raise ValueError(f"Project {project_id} not found.")
 
@@ -40,7 +50,9 @@ class ProjectAgent(BaseAgent):
         return proposal
 
     async def accept_proposal(self, project_id: str, proposal_id: str):
-        """Accepts (merges) a proposal into the project."""
+        """
+        Accepts (merges) a proposal into the project, changing its status.
+        """
         if project_id not in self.projects:
             raise ValueError(f"Project {project_id} not found.")
 

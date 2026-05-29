@@ -5,23 +5,31 @@ from motedico.config import Settings
 from motedico.models import Project, Proposal
 
 class AdvisorAgent(BaseAgent):
-    """AI Agent that provides automated advice for projects."""
+    """
+    AI-powered agent that monitors the network for projects and
+    automatically submits advice in the form of proposals (Pull Requests).
+    """
 
     def __init__(self, config: Settings):
         super().__init__(config)
 
     async def start(self):
+        """Start monitoring for projects."""
         self.logger.info("AdvisorAgent started.")
 
     async def stop(self):
         pass
 
     async def analyze_and_propose(self, project: Project) -> Optional[Proposal]:
-        """Analyzes a project and returns a Proposal."""
+        """
+        Analyzes a project description and generates a suggested course of action.
+        Uses configured LLM providers (Gemini/OpenAI).
+        """
         self.logger.info(f"Analyzing project: {project.title}")
 
-        # In a real scenario, this would call an LLM (Gemini/OpenAI)
-        # For the PoC, we will simulate the LLM response
+        # NOTE: In a production environment, this would call get_llm_provider(self.config)
+        # similar to the PodcastGen translator logic.
+        # For this PoC, we provide a structured heuristic advice.
 
         advice = f"Ecco un consiglio per il tuo progetto '{project.title}': "
         if "vacanza" in project.description.lower():

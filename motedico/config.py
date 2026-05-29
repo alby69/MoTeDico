@@ -5,6 +5,11 @@ from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
+    """
+    MoTeDico Configuration settings using Pydantic Settings V2.
+    Loads values from environment variables or a .env file.
+    """
+
     # === LLM Provider ===
     llm_provider: str = Field(
         default="gemini",
@@ -12,15 +17,15 @@ class Settings(BaseSettings):
     )
 
     # Gemini
-    gemini_api_key: str = Field(default="")
+    gemini_api_key: str = Field(default="", description="Google Gemini API Key")
     gemini_model: str = Field(default="gemini-2.0-flash")
 
     # OpenAI
-    openai_api_key: str = Field(default="")
+    openai_api_key: str = Field(default="", description="OpenAI API Key")
     openai_model: str = Field(default="gpt-4o-mini")
 
     # Anthropic
-    anthropic_api_key: str = Field(default="")
+    anthropic_api_key: str = Field(default="", description="Anthropic API Key")
     anthropic_model: str = Field(default="claude-3-5-haiku-latest")
 
     # Ollama
@@ -29,11 +34,12 @@ class Settings(BaseSettings):
 
     # === Network ===
     nostr_relays: list[str] = Field(
-        default_factory=lambda: ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.snort.social"]
+        default_factory=lambda: ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.snort.social"],
+        description="List of Nostr relays for decentralized communication"
     )
 
     # === Storage ===
-    output_dir: Path = Field(default=Path("./output"))
+    output_dir: Path = Field(default=Path("./output"), description="Directory for local data storage")
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -43,6 +49,7 @@ class Settings(BaseSettings):
     )
 
     def validate(self):
+        """Validates that necessary API keys are present based on the selected provider."""
         missing = []
         if self.llm_provider == "gemini" and not self.gemini_api_key:
             missing.append("GEMINI_API_KEY")
