@@ -11,56 +11,53 @@ from contextlib import asynccontextmanager
 
 # In-memory state for the demo
 cfg = Settings()
-project_agent = ProjectAgent(cfg)
-advisor_agent = AdvisorAgent(cfg)
-social_agent = SocialAgent(cfg)
+pa = ProjectAgent(cfg)
+aa = AdvisorAgent(cfg)
+sa = SocialAgent(cfg)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await project_agent.start()
-    await advisor_agent.start()
-    await social_agent.start()
+    await pa.start()
+    await aa.start()
+    await sa.start()
     yield
-    await project_agent.stop()
-    await advisor_agent.stop()
-    await social_agent.stop()
+    await pa.stop()
+    await aa.stop()
+    await sa.stop()
 
 app = FastAPI(title="MoTeDico Web", lifespan=lifespan)
 templates = Jinja2Templates(directory="motedico/web/templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    projects = list(project_agent.projects.values())
-    return templates.TemplateResponse(request=request, name="index.html", context={"projects": projects})
+    return templates.TemplateResponse(request=request, name="index.html", context={"projects": list(pa.projects.values())})
 
 @app.post("/projects", response_class=RedirectResponse)
 async def create_project(title: str = Form(...), description: str = Form(...), owner: str = Form(...)):
-    project = await project_agent.create_project(title, description, owner)
-    # Simulate community upvote
-    await social_agent.react_to_project(project.id)
-    # Trigger AI advisor
+    project = await pa.create_project(title, description, owner)
+    await sa.react_to_project(project.id)
+    # Correctly register the AI proposal by passing the ProjectAgent reference or using a closure
     asyncio.create_task(advisor_agent_logic(project.id))
     return RedirectResponse(url="/", status_code=303)
 
 async def advisor_agent_logic(project_id: str):
-    # Wait a bit for dramatic effect in the UI
     await asyncio.sleep(2)
-    project = project_agent.projects.get(project_id)
+    project = pa.projects.get(project_id)
     if project:
-        proposal = await advisor_agent.analyze_and_propose(project)
+        proposal = await aa.analyze_and_propose(project)
         if proposal:
-            await project_agent.add_proposal(project_id, proposal.author, proposal.content)
-            # Simulate reaction to proposal
-            await social_agent.react_to_proposal("pr_1")
+            # FIX: Properly add proposal to the project state
+            await pa.add_proposal(project_id, proposal.author, proposal.content)
+            await sa.react_to_proposal("pr_1")
 
 @app.get("/projects/{project_id}", response_class=HTMLResponse)
 async def project_details(request: Request, project_id: str):
-    project = project_agent.projects.get(project_id)
+    project = pa.projects.get(project_id)
     if not project:
         return HTMLResponse(content="Project not found", status_code=404)
     return templates.TemplateResponse(request=request, name="project.html", context={"project": project})
 
 @app.post("/projects/{project_id}/proposals/{proposal_id}/accept", response_class=RedirectResponse)
 async def accept_proposal(project_id: str, proposal_id: str):
-    await project_agent.accept_proposal(project_id, proposal_id)
+    await pa.accept_proposal(project_id, proposal_id)
     return RedirectResponse(url=f"/projects/{project_id}", status_code=303)

@@ -17,7 +17,6 @@
 
     <main class="container mx-auto mt-8 p-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Create Project Section -->
             <section class="bg-white p-6 rounded shadow">
                 <h2 class="text-xl font-semibold mb-4">Crea un nuovo progetto</h2>
                 <form action="/projects" method="post" class="space-y-4">
@@ -26,35 +25,30 @@
                         <input type="text" name="title" required class="mt-1 block w-full border border-gray-300 rounded-md p-2">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Descrizione (Cosa vuoi fare?)</label>
+                        <label class="block text-sm font-medium text-gray-700">Descrizione</label>
                         <textarea name="description" required class="mt-1 block w-full border border-gray-300 rounded-md p-2 h-32"></textarea>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Tuo Nome</label>
                         <input type="text" name="owner" required class="mt-1 block w-full border border-gray-300 rounded-md p-2">
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Pubblica Progetto</button>
+                    <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Pubblica</button>
                 </form>
             </section>
 
-            <!-- Projects List Section -->
             <section>
-                <h2 class="text-xl font-semibold mb-4">Progetti Recenti</h2>
-                <div class="space-y-4">
+                <h2 class="text-xl font-semibold mb-4">Progetti</h2>
+                <div class="space-y-4" hx-get="/" hx-trigger="every 5s" hx-select="section > div">
                     {% for project in projects %}
-                    <div class="bg-white p-4 rounded shadow hover:border-blue-500 border-2 border-transparent transition-all">
-                        <h3 class="text-lg font-bold"><a href="/projects/{{ project.id }}" class="text-blue-600">{{ project.title }}</a></h3>
-                        <p class="text-gray-600 text-sm mb-2">Creato da {{ project.owner }} il {{ project.created_at.strftime('%d/%m/%Y') }}</p>
-                        <p class="text-gray-800 line-clamp-3">{{ project.description }}</p>
-                        <div class="mt-4 flex justify-between items-center text-sm">
-                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded">{{ project.status }}</span>
-                            <span class="text-blue-500">{{ project.proposals|length }} Proposte (PR)</span>
+                    <div class="bg-white p-4 rounded shadow">
+                        <h3 class="text-lg font-bold text-blue-600"><a href="/projects/{{ project.id }}">{{ project.title }}</a></h3>
+                        <p class="text-gray-600 text-sm">Creato da {{ project.owner }}</p>
+                        <div class="mt-2 text-sm flex space-x-4">
+                            <span>{{ project.proposals|length }} Proposte</span>
+                            <span class="font-bold uppercase text-green-600">{{ project.status }}</span>
                         </div>
                     </div>
                     {% endfor %}
-                    {% if not projects %}
-                    <p class="text-gray-500 italic">Nessun progetto ancora creato.</p>
-                    {% endif %}
                 </div>
             </section>
         </div>

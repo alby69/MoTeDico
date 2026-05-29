@@ -7,7 +7,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """
     MoTeDico Configuration settings using Pydantic Settings V2.
-    Loads values from environment variables or a .env file.
     """
 
     # === LLM Provider ===
@@ -43,7 +42,7 @@ class Settings(BaseSettings):
         default="https://ipfs.infura.io:5001/api/v0/add",
         description="IPFS API endpoint for uploading files"
     )
-    ipfs_project_id: str = Field(default="", description="IPFS Project ID (e.g. Infura)")
+    ipfs_project_id: str = Field(default="", description="IPFS Project ID")
     ipfs_project_secret: str = Field(default="", description="IPFS Project Secret")
     output_dir: Path = Field(default=Path("./output"), description="Directory for local data storage")
 
@@ -55,13 +54,11 @@ class Settings(BaseSettings):
     )
 
     def validate(self):
-        """Validates that necessary API keys are present based on the selected provider."""
+        """Validates that necessary API keys are present."""
         missing = []
         if self.llm_provider == "gemini" and not self.gemini_api_key:
             missing.append("GEMINI_API_KEY")
         elif self.llm_provider == "openai" and not self.openai_api_key:
             missing.append("OPENAI_API_KEY")
-        elif self.llm_provider == "anthropic" and not self.anthropic_api_key:
-            missing.append("ANTHROPIC_API_KEY")
         if missing:
             raise ValueError(f"Missing required env vars: {', '.join(missing)}")

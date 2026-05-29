@@ -6,13 +6,9 @@ from motedico.config import Settings
 class BaseAgent(ABC):
     """
     Base class for all specialized agents in the MoTeDico ecosystem.
-    Provides basic logging and event emission capabilities.
     """
 
     def __init__(self, config: Settings):
-        """
-        Initialize the agent with configuration and a dedicated logger.
-        """
         self.config = config
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(logging.INFO)
@@ -24,23 +20,14 @@ class BaseAgent(ABC):
 
     @abstractmethod
     async def start(self):
-        """
-        Initialize and start the agent's background tasks or connections.
-        Must be implemented by subclasses.
-        """
+        """Start the agent."""
         pass
 
     @abstractmethod
     async def stop(self):
-        """
-        Gracefully stop the agent and release resources.
-        Must be implemented by subclasses.
-        """
+        """Stop the agent."""
         pass
 
     async def emit_event(self, event_type: str, data: Any):
-        """
-        Log an event emission. In the future, this will broadcast to an internal
-        or external (Nostr) event bus.
-        """
+        """Log or broadcast an event."""
         self.logger.info(f"Event Emitted: {event_type} - {data}")
