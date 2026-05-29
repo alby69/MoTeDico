@@ -36,12 +36,19 @@ In questa fase abbiamo potenziato la sicurezza e la gestione dell'identità.
 
 ---
 
-## Prossimi Sviluppi
+## Fase 4: Interfaccia Utente Web (Completato)
+In questa fase abbiamo creato un'interfaccia accessibile a tutti.
 
-### Fase 4: Interfaccia Utente (Web UI)
-- [ ] **Decentralized Web App**: Dashboard FastAPI + HTMX per gestire progetti e PR.
-- [ ] **Real-time Notifications**: Aggiornamento UI tramite eventi Nostr.
-- [ ] **Player Multimedia**: Visualizzazione dei contenuti multimediali recuperati direttamente da gateway IPFS.
+- [x] **Decentralized Web App**: Dashboard FastAPI + HTMX per gestire progetti e PR.
+- [x] **Visualizzazione Real-time**: Interfaccia reattiva per il monitoraggio delle proposte.
+- [x] **Integrazione Agentica**: Gli agenti operano in background durante l'uso della Web App.
+
+---
+
+## Prossimi Sviluppi: Fase 5 - Scalabilità & P2P Esteso
+- [ ] **Nostr Event Persistence**: Salvataggio degli eventi Nostr in un database locale (es. SQLite) per l'accesso offline.
+- [ ] **Real IPFS multimedia player**: Visualizzazione di immagini/video caricati dagli utenti.
+- [ ] **Agent Market**: Possibilità per gli utenti di "assoldare" advisor specializzati diversi.
 
 ---
 

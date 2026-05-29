@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ project.title }} - MoTeDico</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-blue-600 p-4 text-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold"><a href="/">MoTeDico</a></h1>
+            <a href="/" class="text-sm underline">Torna alla Dashboard</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto mt-8 p-4">
+        <div class="bg-white p-6 rounded shadow mb-8">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900">{{ project.title }}</h2>
+                    <p class="text-gray-600">Creato da <span class="font-semibold">{{ project.owner }}</span></p>
+                </div>
+                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-bold uppercase">{{ project.status }}</span>
+            </div>
+            <hr class="my-4">
+            <div class="prose max-w-none">
+                <p class="text-lg text-gray-800">{{ project.description }}</p>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold mb-4">Proposte Ricevute (Pull Requests)</h2>
+        <div class="space-y-4">
+            {% for proposal in project.proposals %}
+            <div class="bg-white p-6 rounded shadow border-l-4 {% if proposal.status == 'accepted' %}border-green-500{% else %}border-blue-500{% endif %}">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="font-bold text-blue-600">{{ proposal.author }}</span>
+                        <span class="text-gray-400 text-sm">• {{ proposal.created_at.strftime('%H:%M del %d/%m') }}</span>
+                    </div>
+                    {% if proposal.status == 'pending' %}
+                    <form action="/projects/{{ project.id }}/proposals/{{ proposal.id }}/accept" method="post">
+                        <button type="submit" class="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 text-sm transition-colors">
+                            Accetta Proposta (Merge)
+                        </button>
+                    </form>
+                    {% else %}
+                    <span class="text-green-600 font-bold flex items-center">
+                        <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                        ACCETTATA
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="bg-gray-50 p-4 rounded border italic text-gray-700">
+                    {{ proposal.content }}
+                </div>
+            </div>
+            {% endfor %}
+            {% if not project.proposals %}
+            <div class="bg-white p-8 rounded shadow text-center">
+                <p class="text-gray-500">In attesa di proposte... Gli advisor AI e la community stanno analizzando il tuo progetto.</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</body>
+</html>
